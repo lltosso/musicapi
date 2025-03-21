@@ -1,30 +1,30 @@
 package com.example.musicApi.entity;
 
 public class Music {
-    private String user;
-    private String role;
+    private String title;
+    private String artist;
 
     public Music() {
     }
 
-    public Music(String user, String role) {
-        this.user = user;
-        this.role = role;
+    public Music(String title, String artist) {
+        this.title = title;
+        this.artist = artist;
     }
 
-    public String getUser() {
-        return user;
+    public String getTitle() {
+        return title;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getRole() {
-        return role;
+    public String getArtist() {
+        return artist;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setArtist(String artist) {
+        this.artist = artist;
     }
 }
