@@ -8,13 +8,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/music")
 public class MusicControllerRest {
 
+    private static final String CATALOG_MESSAGE = "Catálogo de música disponible para todos los usuarios.";
+    private static final String PREMIUM_MESSAGE = "Contenido premium solo para usuarios con rol ADMIN.";
+
     @GetMapping("/catalog")
     public String showCatalog() {
-        return "Catálogo de música disponible para todos los usuarios.";
+        return CATALOG_MESSAGE;
     }
 
     @GetMapping("/premium")
     public String accessPremium() {
-        return "Contenido premium solo para usuarios con rol ADMIN.";
+        return PREMIUM_MESSAGE;
     }
 }

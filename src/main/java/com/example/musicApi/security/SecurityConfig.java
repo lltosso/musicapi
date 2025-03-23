@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 
 @Configuration
 public class SecurityConfig {
+
     @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource) {
         return new JdbcUserDetailsManager(dataSource);
@@ -26,10 +27,12 @@ public class SecurityConfig {
                 configurer
                         .requestMatchers(HttpMethod.GET, "/api/music/catalog").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/api/music/premium").hasRole("ADMIN")
-
+                        .anyRequest().authenticated()
         );
+
         http.httpBasic(Customizer.withDefaults());
         http.csrf(csrf -> csrf.disable());
+
         return http.build();
     }
 }
