@@ -1,23 +1,78 @@
 package com.example.musicApi.musicapirest;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.musicApi.entity.Music;
+import jakarta.annotation.PostConstruct;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/music")
+@RequestMapping("/api")
 public class MusicControllerRest {
 
-    private static final String CATALOG_MESSAGE = "Catálogo de música disponible para todos los usuarios.";
-    private static final String PREMIUM_MESSAGE = "Contenido premium solo para usuarios con rol ADMIN.";
+    private List<Music> musicList;
 
-    @GetMapping("/catalog")
-    public String showCatalog() {
-        return CATALOG_MESSAGE;
+    @PostConstruct
+    public void loadData() {
+        musicList = new ArrayList<>();
+        musicList.add(new Music("Despacito", "Luis Fonsi"));
+        musicList.add(new Music("Beat It", "Michael Jackson"));
+        musicList.add(new Music("pump it ", "Black eyed peas"));
     }
 
-    @GetMapping("/premium")
-    public String accessPremium() {
-        return PREMIUM_MESSAGE;
+    @GetMapping("/music")
+    public List<Music> showCatalog() {
+        return musicList;
     }
+
+
+
+    @GetMapping("/{title}")
+    public Music getMusicByName(@PathVariable String title) {
+        Optional<Music> song = musicList.stream()
+                .filter(music -> music.getTitle().equalsIgnoreCase(title))
+                .findFirst();
+
+        return song.orElse(null);
+    }
+
+
+    @PostMapping
+    public String addMusic(@RequestBody Music newMusic) {
+        Optional<Music> existingMusic = musicList.stream()
+                .filter(music -> music.getTitle().equalsIgnoreCase(newMusic.getTitle()))
+                .findFirst();
+
+        if (existingMusic.isPresent()) {
+            return "La canción ya existe!";
+        }
+
+        musicList.add(newMusic);
+        return "Canción agregada exitosamente!";
+    }
+
+
+
+    @PutMapping("/{title}")
+    public String updateMusic(@PathVariable String title, @RequestBody Music updatedMusic) {
+        for (Music music : musicList) {
+            if (music.getTitle().equalsIgnoreCase(title)) {
+                music.setTitle(updatedMusic.getTitle());
+                music.setArtist(updatedMusic.getArtist());
+                return "Canción actualizada con éxito!";
+            }
+        }
+        return "Canción no encontrada!";
+    }
+
+
+
+    @DeleteMapping("/{title}")
+    public String deleteMusic(@PathVariable String title) {
+        boolean removed = musicList.removeIf(music -> music.getTitle().equalsIgnoreCase(title));
+        return removed ? "Canción eliminada!" : "Canción no encontrada!";
+    }
+
 }

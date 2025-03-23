@@ -25,9 +25,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                 configurer
+                        .requestMatchers(HttpMethod.GET, "/api/music").hasAnyRole("USER")
                         .requestMatchers(HttpMethod.GET, "/api/music/catalog").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/api/music/premium").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+
+
         );
 
         http.httpBasic(Customizer.withDefaults());
