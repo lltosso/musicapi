@@ -1,15 +1,29 @@
 package com.example.musicApi.entity;
 
 public class Music {
+    private String id;
     private String title;
     private String artist;
 
+
     public Music() {
+
     }
 
-    public Music(String title, String artist) {
+
+    public Music(String id, String title, String artist) {
+        this.id = id;
         this.title = title;
         this.artist = artist;
+    }
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -28,10 +42,12 @@ public class Music {
         this.artist = artist;
     }
 
+
     @Override
     public String toString() {
         return "Music{" +
-                "title='" + title + '\'' +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
                 ", artist='" + artist + '\'' +
                 '}';
     }

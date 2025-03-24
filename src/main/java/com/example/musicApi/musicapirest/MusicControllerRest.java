@@ -17,92 +17,71 @@ public class MusicControllerRest {
     @PostConstruct
     public void loadData() {
         musicList = new ArrayList<>();
-        musicList.add(new Music("Despacito", "Luis Fonsi"));
-        musicList.add(new Music("Beat It", "Michael Jackson"));
-        musicList.add(new Music("pump it ", "Black eyed peas"));
+        musicList.add(new Music("1", "Despacito", "Luis Fonsi"));
+        musicList.add(new Music("2", "Beat It", "Michael Jackson"));
+        musicList.add(new Music("3", "Pump It", "Black Eyed Peas"));
     }
+
 
     @GetMapping
     public List<Music> showCatalog() {
         return musicList;
     }
 
-    @GetMapping("/title/{title}")
-    public Music getMusicByName(@PathVariable String title) {
+
+    @GetMapping("/{id}")
+    public String getMusicById(@PathVariable String id) {
         Optional<Music> song = musicList.stream()
-                .filter(music -> music.getTitle().equalsIgnoreCase(title))
+                .filter(music -> music.getId().equals(id))
                 .findFirst();
 
-        return song.orElse(null);
+        if (song.isPresent()) {
+            Music music = song.get();
+            return "ID: " + music.getId() + ", Title: " + music.getTitle() + ", Artist: " + music.getArtist();
+        } else {
+            return "Error: Canción no encontrada!";
+        }
     }
 
-    @GetMapping("/artist/{artist}")
-    public Music getMusicByArtist(@PathVariable String artist) {
-        Optional<Music> song = musicList.stream()
-                .filter(music -> music.getArtist().equalsIgnoreCase(artist))
-                .findFirst();
-
-        return song.orElse(null);
-    }
 
     @PostMapping
     public String addMusic(@RequestBody Music newMusic) {
+
         Optional<Music> existingMusic = musicList.stream()
-                .filter(music -> music.getTitle().equalsIgnoreCase(newMusic.getTitle()))
+                .filter(music -> music.getId().equals(newMusic.getId()))
                 .findFirst();
 
         if (existingMusic.isPresent()) {
-            return "La canción ya existe!";
+            return "Error: Ya existe una canción con este ID!";
         }
 
+
         musicList.add(newMusic);
-        return "Canción agregada exitosamente!";
+
+
+        return "Canción agregada exitosamente! ID: " + newMusic.getId() + ", Title: " + newMusic.getTitle() + ", Artist: " + newMusic.getArtist();
     }
 
-    // Nuevo método para manejar PUT en la ruta base
-    @PutMapping
-    public String updateMusic(@RequestBody Music updatedMusic) {
+    @PutMapping("/{id}")
+    public String updateMusic(@PathVariable String id, @RequestBody Music updatedMusic) {
         Optional<Music> existingMusic = musicList.stream()
-                .filter(music -> music.getTitle().equalsIgnoreCase(updatedMusic.getTitle()))
+                .filter(music -> music.getId().equals(id))
                 .findFirst();
 
         if (existingMusic.isPresent()) {
             Music music = existingMusic.get();
             music.setTitle(updatedMusic.getTitle());
             music.setArtist(updatedMusic.getArtist());
-            return "Canción actualizada con éxito!";
+            return "Canción actualizada con éxito! ID: " + music.getId() + ", Title: " + music.getTitle() + ", Artist: " + music.getArtist();
         }
 
-        return "Canción no encontrada!";
+        return "Error: Canción no encontrada!";
     }
 
-    @PutMapping("/title/{title}")
-    public String updateMusic(@PathVariable String title, @RequestBody Music updatedMusic) {
-        for (Music music : musicList) {
-            if (music.getTitle().equalsIgnoreCase(title)) {
-                music.setTitle(updatedMusic.getTitle());
-                music.setArtist(updatedMusic.getArtist());
-                return "Canción actualizada con éxito!";
-            }
-        }
-        return "Canción no encontrada!";
-    }
 
-    @PutMapping("/artist/{artist}")
-    public String updateArtist(@PathVariable String artist, @RequestBody Music updatedMusic) {
-        for (Music music : musicList) {
-            if (music.getArtist().equalsIgnoreCase(artist)) {
-                music.setTitle(updatedMusic.getTitle());
-                music.setArtist(updatedMusic.getArtist());
-                return "Artista actualizado con éxito!";
-            }
-        }
-        return "Artista no encontrado!";
-    }
-
-    @DeleteMapping("/title/{title}")
-    public String deleteMusic(@PathVariable String title) {
-        boolean removed = musicList.removeIf(music -> music.getTitle().equalsIgnoreCase(title));
-        return removed ? "Canción eliminada!" : "Canción no encontrada!";
+    @DeleteMapping("/{id}")
+    public String deleteMusic(@PathVariable String id) {
+        boolean removed = musicList.removeIf(music -> music.getId().equals(id));
+        return removed ? "Canción eliminada!" : "Error: Canción no encontrada!";
     }
 }
