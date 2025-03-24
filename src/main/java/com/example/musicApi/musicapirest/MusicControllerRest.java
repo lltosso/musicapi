@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/music")
 public class MusicControllerRest {
 
     private List<Music> musicList;
@@ -22,14 +22,12 @@ public class MusicControllerRest {
         musicList.add(new Music("pump it ", "Black eyed peas"));
     }
 
-    @GetMapping("/music")
+    @GetMapping
     public List<Music> showCatalog() {
         return musicList;
     }
 
-
-
-    @GetMapping("/{title}")
+    @GetMapping("/title/{title}")
     public Music getMusicByName(@PathVariable String title) {
         Optional<Music> song = musicList.stream()
                 .filter(music -> music.getTitle().equalsIgnoreCase(title))
@@ -38,7 +36,14 @@ public class MusicControllerRest {
         return song.orElse(null);
     }
 
+    @GetMapping("/artist/{artist}")
+    public Music getMusicByArtist(@PathVariable String artist) {
+        Optional<Music> song = musicList.stream()
+                .filter(music -> music.getArtist().equalsIgnoreCase(artist))
+                .findFirst();
 
+        return song.orElse(null);
+    }
 
     @PostMapping
     public String addMusic(@RequestBody Music newMusic) {
@@ -54,9 +59,24 @@ public class MusicControllerRest {
         return "Canción agregada exitosamente!";
     }
 
+    // Nuevo método para manejar PUT en la ruta base
+    @PutMapping
+    public String updateMusic(@RequestBody Music updatedMusic) {
+        Optional<Music> existingMusic = musicList.stream()
+                .filter(music -> music.getTitle().equalsIgnoreCase(updatedMusic.getTitle()))
+                .findFirst();
 
+        if (existingMusic.isPresent()) {
+            Music music = existingMusic.get();
+            music.setTitle(updatedMusic.getTitle());
+            music.setArtist(updatedMusic.getArtist());
+            return "Canción actualizada con éxito!";
+        }
 
-    @PutMapping("/{title}")
+        return "Canción no encontrada!";
+    }
+
+    @PutMapping("/title/{title}")
     public String updateMusic(@PathVariable String title, @RequestBody Music updatedMusic) {
         for (Music music : musicList) {
             if (music.getTitle().equalsIgnoreCase(title)) {
@@ -68,12 +88,21 @@ public class MusicControllerRest {
         return "Canción no encontrada!";
     }
 
+    @PutMapping("/artist/{artist}")
+    public String updateArtist(@PathVariable String artist, @RequestBody Music updatedMusic) {
+        for (Music music : musicList) {
+            if (music.getArtist().equalsIgnoreCase(artist)) {
+                music.setTitle(updatedMusic.getTitle());
+                music.setArtist(updatedMusic.getArtist());
+                return "Artista actualizado con éxito!";
+            }
+        }
+        return "Artista no encontrado!";
+    }
 
-
-    @DeleteMapping("/{title}")
+    @DeleteMapping("/title/{title}")
     public String deleteMusic(@PathVariable String title) {
         boolean removed = musicList.removeIf(music -> music.getTitle().equalsIgnoreCase(title));
         return removed ? "Canción eliminada!" : "Canción no encontrada!";
     }
-
 }
